@@ -26,7 +26,7 @@ namespace HotCopper
         }
 
         // Hot Copper Posts, Threads and Authors
-        private void button1_Click(object sender, EventArgs e)
+        private void GetHotCopperThreads(object sender, EventArgs e)
         {
             var db = new FinanceCrawlerEntities();
             int duplicates = 0;
@@ -40,8 +40,11 @@ namespace HotCopper
             if (stock == null || stock.Trim() == "")
             {
                 int identifier = url.IndexOf("hotcopper.com.au") + 16;
-                stock = url.Substring(identifier, url.Length - identifier);
-                if (stock.Contains("#")) stock = stock.Substring(0, stock.IndexOf("#"));
+                if(url != "")
+                {
+                    stock = url.Substring(identifier, url.Length - identifier);
+                    if (stock.Contains("#")) stock = stock.Substring(0, stock.IndexOf("#"));
+                }
             }
 
             if (url != null && url.Trim() != "")
@@ -304,8 +307,9 @@ namespace HotCopper
                     listbox.Items.Add("\n[" + DateTime.Now + "] HotCopper Posts completed.\n" + postNewData + " saved.");
                     #endregion
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    MessageBox.Show(ex.Message);
                     listbox.Items.Add("Invalid URL!");
                     MessageBox.Show("Invalid URL!");
                     textBox1.Text = "";
@@ -319,7 +323,7 @@ namespace HotCopper
         }
 
         // MARKET DATA
-        private void button3_Click(object sender, EventArgs e)
+        private void MarketDataButton(object sender, EventArgs e)
         {
             var db = new FinanceCrawlerEntities();
             int newData = 0;
@@ -521,7 +525,7 @@ namespace HotCopper
         }
 
         // Positive and Negative words
-        private void button2_Click(object sender, EventArgs e)
+        private void SentimentAnalysisButton(object sender, EventArgs e)
         {
             var db = new FinanceCrawlerEntities();
             int duplicates = 0;
@@ -617,7 +621,7 @@ namespace HotCopper
         }
 
         // HOT COPPER POSTS, Threads, Authors... By Text file
-        private void button4_Click(object sender, EventArgs e)
+        private void ThreadsByTextFile(object sender, EventArgs e)
         {
             listbox.Items.Add("[" + DateTime.Now + "] HOT COPPER by text file begins! Please wait for a few seconds.");
             DialogResult result = openFileDialog1.ShowDialog();
@@ -643,7 +647,7 @@ namespace HotCopper
                 if (url != null && url.Trim() != "")
                 {
                     textBox1.Text = url;
-                    button1_Click(sender, e);
+                    GetHotCopperThreads(sender, e);
                 }
                 else
                 {
@@ -654,7 +658,7 @@ namespace HotCopper
         }
 
         // Market Data by Text file
-        private void button5_Click(object sender, EventArgs e)
+        private void MarketDataByTextFile(object sender, EventArgs e)
         {
             listbox.Items.Add("[" + DateTime.Now + "] Hot Copper Market Data by text file begins! Please wait for a few seconds.");
             DialogResult result = openFileDialog1.ShowDialog();
@@ -680,7 +684,7 @@ namespace HotCopper
                 if (url != null && url.Trim() != "")
                 {
                     textBox1.Text = url;
-                    button3_Click(sender, e);
+                    MarketDataButton(sender, e);
                 }
                 else
                 {

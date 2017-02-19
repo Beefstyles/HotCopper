@@ -33,7 +33,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.exitbutton = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.ThreadsButton = new System.Windows.Forms.Button();
             this.listbox = new System.Windows.Forms.ListBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.button2 = new System.Windows.Forms.Button();
@@ -91,14 +91,15 @@
             // 
             // button1
             // 
-            this.button1.ForeColor = System.Drawing.Color.OrangeRed;
-            this.button1.Location = new System.Drawing.Point(207, 39);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(181, 23);
-            this.button1.TabIndex = 5;
-            this.button1.Text = "HotCopper Threads";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.ThreadsButton.ForeColor = System.Drawing.Color.OrangeRed;
+            this.ThreadsButton.Location = new System.Drawing.Point(207, 39);
+            this.ThreadsButton.Name = "button1";
+            this.ThreadsButton.Size = new System.Drawing.Size(181, 23);
+            this.ThreadsButton.TabIndex = 5;
+            this.ThreadsButton.Text = "HotCopper Threads";
+            this.ThreadsButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.ThreadsButton.UseVisualStyleBackColor = true;
+            this.ThreadsButton.Click += new System.EventHandler(this.GetHotCopperThreads);
             // 
             // listbox
             // 
@@ -121,7 +122,7 @@
             this.button2.TabIndex = 7;
             this.button2.Text = "Pos/Neg Words";
             this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.button2.Click += new System.EventHandler(this.SentimentAnalysisButton);
             // 
             // button3
             // 
@@ -132,7 +133,7 @@
             this.button3.TabIndex = 8;
             this.button3.Text = "Market Data";
             this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.button3.Click += new System.EventHandler(this.MarketDataButton);
             // 
             // button4
             // 
@@ -143,7 +144,7 @@
             this.button4.TabIndex = 9;
             this.button4.Text = "HotCopper Threads By Text File";
             this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.button4.Click += new System.EventHandler(this.ThreadsByTextFile);
             // 
             // button5
             // 
@@ -154,7 +155,7 @@
             this.button5.TabIndex = 10;
             this.button5.Text = "Market Data By Text File";
             this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
+            this.button5.Click += new System.EventHandler(this.MarketDataByTextFile);
             // 
             // label3
             // 
@@ -199,7 +200,7 @@
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.listbox);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.ThreadsButton);
             this.Controls.Add(this.exitbutton);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -219,7 +220,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button exitbutton;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button ThreadsButton;
         private System.Windows.Forms.ListBox listbox;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Button button2;

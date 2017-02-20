@@ -28,7 +28,8 @@ namespace HotCopper
         // Hot Copper Posts, Threads and Authors
         private void GetHotCopperThreads(object sender, EventArgs e)
         {
-            var db = new FinanceCrawlerEntities();
+            //var db = new FinanceCrawlerEntities();
+            var db = new HCDB();
             int duplicates = 0;
             int newData = 0;
             int postNewData = 0;
@@ -246,9 +247,9 @@ namespace HotCopper
                                         lastPoster = lastPoster.Replace("&#039;", "'");
                                     }
 
-                                    if (!db.HotCopper_Threads.Any(f => f.Subject == subject && f.Begin_Date == threadBegin))
+                                    if (!db.Threads.Any(f => f.Subject == subject && f.Begin_Date == threadBegin))
                                     {
-                                        db.HotCopper_Threads.Add(new HotCopper_Threads
+                                        db.Threads.Add(new HCDB_Threads
                                         {
                                             Stock = stock,
                                             Tags = tags,
@@ -265,7 +266,7 @@ namespace HotCopper
                                     }
                                     else
                                     {
-                                        var existing = (from u in db.HotCopper_Threads 
+                                        var existing = (from u in db.Threads
                                                         where u.Subject == subject 
                                                         && u.Begin_Date == threadBegin select u).FirstOrDefault();
                                         if (existing != null)
@@ -300,6 +301,7 @@ namespace HotCopper
                     }
                     catch (Exception ex)
                     {
+                        MessageBox.Show(ex.Message);
                         listbox.Items.Add("Error: " + ex);
                     }
 
@@ -325,7 +327,7 @@ namespace HotCopper
         // MARKET DATA
         private void MarketDataButton(object sender, EventArgs e)
         {
-            var db = new FinanceCrawlerEntities();
+            var db = new HCDB();
             int newData = 0;
 
             // Retreive a source code from a webpage
@@ -335,7 +337,6 @@ namespace HotCopper
                 try
                 {
                     string sourceCode = WorkerClasses.getSourceCode(url);
-                    MessageBox.Show("getSourceCode Works");
                     if (sourceCode == "invalid") throw new UriFormatException();
                     listbox.Items.Add("[" + DateTime.Now + "] Process Starts. Please wait for a few minutes.");
 
@@ -386,11 +387,14 @@ namespace HotCopper
                     endIndex = sourceCode.IndexOf("</");
                     temp = sourceCode.Substring(0, endIndex).Replace(",", "");
                     temp = temp.Replace("$", "");
+                    MessageBox.Show("Open is currently " + temp);
                     if (temp.Contains(""))
                     {
                         temp = temp.Replace("&cent;", "");
+                        temp = temp.Replace("M", "");
                         temp = Convert.ToString(Convert.ToDouble(temp) / 100);
                     }
+                    
                     Decimal openValue = Convert.ToDecimal(temp);
 
                     // Last
@@ -404,6 +408,7 @@ namespace HotCopper
                     if (temp.Contains(""))
                     {
                         temp = temp.Replace("&cent;", "");
+                        temp = temp.Replace("M", "");
                         temp = Convert.ToString(Convert.ToDouble(temp) / 100);
                     }
                     Decimal lastValue = Convert.ToDecimal(temp);
@@ -492,7 +497,7 @@ namespace HotCopper
                         temp = Convert.ToString(Convert.ToDecimal(temp) / 1000000000);
                     Decimal marketCap = Convert.ToDecimal(temp);
 
-                    db.HotCopper_Market_data.Add(new HotCopper_Market_data
+                    db.MarketData.Add(new HCDB_MarketData
                     {
                         Tag = groupWord,
                         Date = DateTime.Now,
@@ -528,7 +533,7 @@ namespace HotCopper
         // Positive and Negative words
         private void SentimentAnalysisButton(object sender, EventArgs e)
         {
-            var db = new FinanceCrawlerEntities();
+            var db = new HCDB();
             int duplicates = 0;
             int updatedData = 0;
 
@@ -553,7 +558,7 @@ namespace HotCopper
 
                 // Check with the article's story if a word in the list is contained in a story
                 //   if it is contained, count how many times.
-                var postsList = (from u in db.HotCopper_Posts 
+                var postsList = (from u in db.Posts 
                                 select u).ToList();
                 if (postsList.Count != 0)
                 {

@@ -76,6 +76,11 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="HCDB.cs" />
+    <Compile Include="HCDB_Authors.cs" />
+    <Compile Include="HCDB_MarketData.cs" />
+    <Compile Include="HCDB_Posts.cs" />
+    <Compile Include="HCDB_Threads.cs" />
     <Compile Include="HotCopper_Authors.cs">
       <DependentUpon>Database.tt</DependentUpon>
     </Compile>

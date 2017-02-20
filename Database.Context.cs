@@ -15,10 +15,11 @@ namespace HotCopper
     
     public partial class FinanceCrawlerEntities : DbContext
     {
-        public FinanceCrawlerEntities()
+       /* public FinanceCrawlerEntities()
             : base("name=FinanceCrawlerEntities")
         {
         }
+        */
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -26,7 +27,7 @@ namespace HotCopper
         }
     
         public DbSet<HotCopper_Authors> HotCopper_Authors { get; set; }
-        public DbSet<HotCopper_Market_data> HotCopper_Market_data { get; set; }
+        public DbSet<HotCopper_Market_data> HCDB_MarketData { get; set; }
         public DbSet<HotCopper_Posts> HotCopper_Posts { get; set; }
         public DbSet<HotCopper_Threads> HotCopper_Threads { get; set; }
     }

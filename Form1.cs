@@ -335,6 +335,7 @@ namespace HotCopper
                 try
                 {
                     string sourceCode = WorkerClasses.getSourceCode(url);
+                    MessageBox.Show("getSourceCode Works");
                     if (sourceCode == "invalid") throw new UriFormatException();
                     listbox.Items.Add("[" + DateTime.Now + "] Process Starts. Please wait for a few minutes.");
 

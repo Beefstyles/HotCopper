@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace HotCopper
 {
@@ -16,15 +17,19 @@ namespace HotCopper
             try
             {
                 HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+                //req.UseDefaultCredentials = true;
+                req.UserAgent = "Firefox";
                 HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+                
                 StreamReader sr = new StreamReader(resp.GetResponseStream(), Encoding.UTF8);
                 string sourceCode = sr.ReadToEnd();
                 sr.Close();
                 resp.Close();
                 return sourceCode;
             }
-            catch
+            catch (WebException ex)
             {
+                MessageBox.Show(ex.Message);
                 return "invalid";
             }
         }

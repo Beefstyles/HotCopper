@@ -15,6 +15,10 @@ namespace HotCopper
 {
     public partial class Form1 : Form
     {
+        bool readFromFile = false;
+        string url;
+        string websiteSourceCode;
+
         public Form1()
         {
             InitializeComponent();
@@ -35,10 +39,17 @@ namespace HotCopper
             int postNewData = 0;
 
             // Retreive a source code from a webpage
-            string url = textBox1.Text;         // e.g. http://hotcopper.com.au/asx/anz#.VI98gSuUfJI
 
+            if (!readFromFile)
+            {
+                url = textBox1.Text;         // e.g. http://hotcopper.com.au/asx/anz#.VI98gSuUfJI
+            }
+            else
+            {
+                url = "http://hotcopper.com.au/asx/anz#.VI98gSuUfJI";
+            }
             string stock = textBox2.Text;
-            if (stock == null || stock.Trim() == "")
+            /*if (stock == null || stock.Trim() == "")
             {
                 int identifier = url.IndexOf("hotcopper.com.au") + 16;
                 if(url != "")
@@ -47,12 +58,21 @@ namespace HotCopper
                     if (stock.Contains("#")) stock = stock.Substring(0, stock.IndexOf("#"));
                 }
             }
+            */
 
             if (url != null && url.Trim() != "")
             {
                 try
                 {
-                    string sourceCode = WorkerClasses.getSourceCode(url);
+                    string sourceCode = "";
+                    if (!readFromFile)
+                    {
+                        sourceCode = WorkerClasses.getSourceCode(url);
+                    }
+                    else
+                    {
+                        sourceCode = websiteSourceCode;
+                    }
                     if (sourceCode == "invalid") throw new UriFormatException();
                     listbox.Items.Add("Process Starts. Please wait for a few minutes.");
 
@@ -84,6 +104,7 @@ namespace HotCopper
                             }
                             tags = tags.Replace("&amp;", "&").Trim();
 
+                            MessageBox.Show(tags);
                             // Subject
                             startIndex = sourceCode.IndexOf("listblock subject");
                             sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
@@ -118,19 +139,22 @@ namespace HotCopper
                             subject = subject.Replace("&amp;", "'");
 
                             // Author
-                            startIndex = sourceCode.IndexOf("listblock author");
+
+                            startIndex = sourceCode.IndexOf("listblock author ");
                             sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
                             startIndex = sourceCode.IndexOf(">") + 1;
                             sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
                             endIndex = sourceCode.IndexOf("</");
                             string author = sourceCode.Substring(0, endIndex);
+
+                            MessageBox.Show(author);
                             // Author's Posts Link
                             startIndex = sourceCode.IndexOf("a href");
                             sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
                             startIndex = sourceCode.IndexOf("\"") + 1;
                             sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
                             endIndex = sourceCode.IndexOf("\"");
-                            string authorPostLink = "http://hotcopper.com.au/" + sourceCode.Substring(0, endIndex);
+                            string authorPostLink = "https://hotcopper.com.au/" + sourceCode.Substring(0, endIndex);
                             authorPostLink = authorPostLink.Replace("&amp;", "&");
                             while (author.Contains("<a"))
                             {
@@ -148,7 +172,7 @@ namespace HotCopper
                             if (!subject.Substring(0, 4).ToLower().Contains("re:") && !subject.Substring(0, 4).ToLower().Contains("ann:"))
                             {
                                 // Views
-                                startIndex = sourceCode.IndexOf("listblock stats");
+                                startIndex = sourceCode.IndexOf("listblock stats ");
                                 sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
                                 startIndex = sourceCode.IndexOf("</span>") + 7;
                                 if (startIndex == -1) startIndex = sourceCode.IndexOf(">") + 1;
@@ -332,6 +356,7 @@ namespace HotCopper
 
             // Retreive a source code from a webpage
             string url = textBox1.Text;         // e.g. http://hotcopper.com.au/asx/anz#.VI98gSuUfJI
+            MessageBox.Show("This runs");
             if (url != null && url.Trim() != "")
             {
                 try
@@ -349,13 +374,33 @@ namespace HotCopper
                     startIndex = sourceCode.IndexOf("stock-pricing");
                     sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
 
+                    
+                    // Open
+                    startIndex = sourceCode.IndexOf("class=\"primary\"");
+                    sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
+                    startIndex = sourceCode.IndexOf(">") + 1;
+                    sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
+                    endIndex = sourceCode.IndexOf("</");
+                    string temp = sourceCode.Substring(0, endIndex).Replace(",", "");
+                    MessageBox.Show("Open is currently " + temp);
+                    temp = temp.Replace("$", "");
+                    
+                    if (temp.Contains(""))
+                    {
+                        temp = temp.Replace("&cent;", "");
+                        temp = temp.Replace("M", "");
+                        temp = Convert.ToString(Convert.ToDouble(temp) / 100);
+                    }
+
+                    Decimal openValue = Convert.ToDecimal(temp);
+
                     // High
                     startIndex = sourceCode.IndexOf("class=\"high\"");
                     sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
                     startIndex = sourceCode.IndexOf(">") + 1;
                     sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
                     endIndex = sourceCode.IndexOf("</");
-                    string temp = sourceCode.Substring(0, endIndex).Replace(",", "");
+                    temp = sourceCode.Substring(0, endIndex).Replace(",", "");
                     temp = temp.Replace("$", "");
                     if (temp.Contains(""))
                     {
@@ -379,25 +424,9 @@ namespace HotCopper
                     }
                     Decimal lowValue = Convert.ToDecimal(temp);
 
-                    // Open
-                    startIndex = sourceCode.IndexOf("class=\"primary\"");
-                    sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
-                    startIndex = sourceCode.IndexOf(">") + 1;
-                    sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
-                    endIndex = sourceCode.IndexOf("</");
-                    temp = sourceCode.Substring(0, endIndex).Replace(",", "");
-                    temp = temp.Replace("$", "");
-                    MessageBox.Show("Open is currently " + temp);
-                    if (temp.Contains(""))
-                    {
-                        temp = temp.Replace("&cent;", "");
-                        temp = temp.Replace("M", "");
-                        temp = Convert.ToString(Convert.ToDouble(temp) / 100);
-                    }
                     
-                    Decimal openValue = Convert.ToDecimal(temp);
 
-                    // Last
+                    // Value
                     startIndex = sourceCode.IndexOf("class=\"primary\"");
                     sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
                     startIndex = sourceCode.IndexOf(">") + 1;
@@ -413,7 +442,7 @@ namespace HotCopper
                     }
                     Decimal lastValue = Convert.ToDecimal(temp);
 
-                    // Market Price
+                    // Volume
                     startIndex = sourceCode.IndexOf("class=\"primary\"");
                     sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
                     startIndex = sourceCode.IndexOf(">") + 1;
@@ -424,11 +453,12 @@ namespace HotCopper
                     if (temp.Contains(""))
                     {
                         temp = temp.Replace("&cent;", "");
+                        temp = temp.Replace("M", "");
                         temp = Convert.ToString(Convert.ToDouble(temp) / 100);
                     }
                     Decimal marketPrice = Convert.ToDecimal(temp);
 
-                    // Volume (Millions)
+                    /*// Volume (Millions)
                     startIndex = sourceCode.IndexOf("class=\"primary\"");
                     sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
                     startIndex = sourceCode.IndexOf(">") + 1;
@@ -497,6 +527,7 @@ namespace HotCopper
                         temp = Convert.ToString(Convert.ToDecimal(temp) / 1000000000);
                     Decimal marketCap = Convert.ToDecimal(temp);
 
+    */
                     db.MarketData.Add(new HCDB_MarketData
                     {
                         Tag = groupWord,
@@ -506,9 +537,9 @@ namespace HotCopper
                         Open = openValue,
                         Last = lastValue,
                         Market_Price = marketPrice,
-                        Volume__Millions_ = volume,
-                        Value__Millions_ = value,
-                        Market_Cap__Billions_ = marketCap
+                        Volume__Millions_ = 0M,
+                        Value__Millions_ = 0M,
+                        Market_Cap__Billions_ = 0M
                     });
                     db.SaveChanges();
                     newData++;
@@ -644,23 +675,38 @@ namespace HotCopper
                     listbox.Items.Add("ERROR: Not appropriate file selected!");
                 }
             }
+            readFromFile = true;
 
             // Retreive source code from a webpage
+            //StringReader strReader = new StringReader(links);
             StringReader strReader = new StringReader(links);
-            while (true)
+            string readUrl = strReader.ReadToEnd();
+            strReader.Close();
+            websiteSourceCode = readUrl;
+            GetHotCopperThreads(sender, e);
+            /*while (true)
             {
-                string url = strReader.ReadLine();
-                if (url != null && url.Trim() != "")
+                //string readUrl = strReader.ReadLine();
+                if (readUrl != null && readUrl.Trim() != "")
                 {
-                    textBox1.Text = url;
+                    
+                    //textBox1.Text = url;
                     GetHotCopperThreads(sender, e);
+                    MessageBox.Show("Something should be happening");
                 }
                 else
                 {
+                    MessageBox.Show(readUrl);
+                    if (url == null)
+                    {
+                        MessageBox.Show("Error");
+                    }
                     MessageBox.Show("\n[" + DateTime.Now + "] Task Ended.");
                     break;
                 }
+
             }
+            */
         }
 
         // Market Data by Text file

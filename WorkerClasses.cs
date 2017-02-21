@@ -50,7 +50,7 @@ namespace HotCopper
 
         public static int savePageData(string stock, string subject, string threadCodeOrg, string threadLink, string authorPostLink)
         {
-            var db = new FinanceCrawlerEntities();
+            var db = new HCDB();
             int startIndex = 0; int endIndex = 0;
 
             // Page Number
@@ -362,9 +362,9 @@ namespace HotCopper
                 disclosure = threadCodeOrg.Substring(0, endIndex);
             }
 
-            if (!db.HotCopper_Posts.Any(f => f.Subject == subject && f.PageNum == pageNum && f.Post_ID == postID))
+            if (!db.Posts.Any(f => f.Subject == subject && f.PageNum == pageNum && f.Post_ID == postID))
             {
-                db.HotCopper_Posts.Add(new HotCopper_Posts
+                db.Posts.Add(new HCDB_Posts
                 {
                     Stock = stock,
                     Subject = subject,
@@ -385,7 +385,7 @@ namespace HotCopper
             }
             else
             {
-                var existing = (from u in db.HotCopper_Posts
+                var existing = (from u in db.Posts
                                 where u.Subject == subject
                                 && u.PageNum == pageNum
                                 && u.Post_ID == postID
@@ -404,7 +404,7 @@ namespace HotCopper
 
         public static void saveAuthorData(string authorLink, string authorPostLink)
         {
-            var db = new FinanceCrawlerEntities();
+            var db = new HCDB();
             try
             {
                 string sourceCode = WorkerClasses.getSourceCode(authorLink);
@@ -593,9 +593,9 @@ namespace HotCopper
                 int numofPostsinaCalendarMonth = numOfPostsInAMonth(authorPostLink);
 
 
-                if (!db.HotCopper_Authors.Any(f => f.Name == authorName))
+                if (!db.Authors.Any(f => f.Name == authorName))
                 {
-                    db.HotCopper_Authors.Add(new HotCopper_Authors
+                    db.Authors.Add(new HCDB_Authors
                     {
                         Name = authorName,
                         Num_of_Posts = postsTotalNum,
@@ -611,7 +611,7 @@ namespace HotCopper
                 }
                 else
                 {
-                    var existing = (from u in db.HotCopper_Authors
+                    var existing = (from u in db.Authors
                                     where u.Name == authorName
                                     select u).FirstOrDefault();
                     if (existing != null)

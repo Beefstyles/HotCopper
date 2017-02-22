@@ -29,50 +29,29 @@ namespace HotCopper
             Environment.Exit(0);
         }
 
-        // Hot Copper Posts, Threads and Authors
-        private void GetHotCopperThreads(object sender, EventArgs e)
+        private void GetHotCopperThreadsFromFile(string pageSource)
         {
-            //var db = new FinanceCrawlerEntities();
             var db = new HCDB();
             int duplicates = 0;
             int newData = 0;
             int postNewData = 0;
 
-            // Retreive a source code from a webpage
-
-            if (!readFromFile)
-            {
-                url = textBox1.Text;         // e.g. http://hotcopper.com.au/asx/anz#.VI98gSuUfJI
-            }
-            else
-            {
-                url = "http://hotcopper.com.au/asx/anz#.VI98gSuUfJI";
-            }
-            string stock = textBox2.Text;
-            /*if (stock == null || stock.Trim() == "")
-            {
-                int identifier = url.IndexOf("hotcopper.com.au") + 16;
-                if(url != "")
-                {
-                    stock = url.Substring(identifier, url.Length - identifier);
-                    if (stock.Contains("#")) stock = stock.Substring(0, stock.IndexOf("#"));
-                }
-            }
-            */
-
-            if (url != null && url.Trim() != "")
+            if (pageSource != null)
             {
                 try
                 {
-                    string sourceCode = "";
-                    if (!readFromFile)
+                    string stock = textBox2.Text;
+                    if (stock == null || stock.Trim() == "")
                     {
-                        sourceCode = WorkerClasses.getSourceCode(url);
+                        int identifier = url.IndexOf("hotcopper.com.au") + 16;
+                        if (url != "")
+                        {
+                            stock = url.Substring(identifier, url.Length - identifier);
+                            if (stock.Contains("#")) stock = stock.Substring(0, stock.IndexOf("#"));
+                        }
                     }
-                    else
-                    {
-                        sourceCode = websiteSourceCode;
-                    }
+                    string sourceCode = pageSource;
+                    
                     if (sourceCode == "invalid") throw new UriFormatException();
                     listbox.Items.Add("Process Starts. Please wait for a few minutes.");
 
@@ -189,7 +168,7 @@ namespace HotCopper
                                 sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
                                 startIndex = sourceCode.IndexOf(">") + 1;
                                 endIndex = sourceCode.IndexOf("</");
-                                if (startIndex < endIndex && startIndex != -1) 
+                                if (startIndex < endIndex && startIndex != -1)
                                     sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
                                 endIndex = sourceCode.IndexOf("</");
                                 string datetimeStr = sourceCode.Substring(0, endIndex).Trim();
@@ -281,7 +260,7 @@ namespace HotCopper
                                             Num_of_Posts = totalPosts,
                                             Num_of_Views = view,
                                             First_Poster = author,
-                                            Begin_Date = threadBegin, 
+                                            Begin_Date = threadBegin,
                                             Last_Post = lastPost,
                                             Last_Poster = lastPoster
                                         });
@@ -291,8 +270,9 @@ namespace HotCopper
                                     else
                                     {
                                         var existing = (from u in db.Threads
-                                                        where u.Subject == subject 
-                                                        && u.Begin_Date == threadBegin select u).FirstOrDefault();
+                                                        where u.Subject == subject
+                                                        && u.Begin_Date == threadBegin
+                                                        select u).FirstOrDefault();
                                         if (existing != null)
                                         {
                                             if (existing.Last_Post != lastPost)
@@ -346,6 +326,25 @@ namespace HotCopper
                 listbox.Items.Add("Please enter URL.");
                 MessageBox.Show("Please enter URL.");
             }
+        }
+
+        // Hot Copper Posts, Threads and Authors
+        private void GetHotCopperThreads(object sender, EventArgs e)
+        {
+            string sourceCode = "";
+            url = textBox1.Text;
+            if (url != null || url.Trim() != "")
+            {
+                // Retreive a source code from a webpage
+                sourceCode = WorkerClasses.getSourceCode(url);
+            }
+            else
+            {
+                listbox.Items.Add("Please enter URL.");
+                MessageBox.Show("Please enter URL.");
+            }
+
+            GetHotCopperThreadsFromFile(sourceCode);
         }
 
         // MARKET DATA
@@ -683,7 +682,7 @@ namespace HotCopper
             string readUrl = strReader.ReadToEnd();
             strReader.Close();
             websiteSourceCode = readUrl;
-            GetHotCopperThreads(sender, e);
+            GetHotCopperThreadsFromFile(websiteSourceCode);
             /*while (true)
             {
                 //string readUrl = strReader.ReadLine();

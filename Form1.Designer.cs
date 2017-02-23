@@ -99,7 +99,7 @@
             this.ThreadsButton.Text = "HotCopper Threads";
             this.ThreadsButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.ThreadsButton.UseVisualStyleBackColor = true;
-            this.ThreadsButton.Click += new System.EventHandler(this.GetHotCopperThreads);
+            this.ThreadsButton.Click += new System.EventHandler(this.GetHotCopperThreadsFromUrl);
             // 
             // listbox
             // 

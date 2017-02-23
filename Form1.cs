@@ -17,7 +17,6 @@ namespace HotCopper
     {
         bool readFromFile = false;
         string url;
-        string websiteSourceCode;
 
         public Form1()
         {
@@ -29,7 +28,7 @@ namespace HotCopper
             Environment.Exit(0);
         }
 
-        private void GetHotCopperThreadsFromFile(string pageSource)
+        private void GetHotCopperThreads(string pageSource)
         {
             var db = new HCDB();
             int duplicates = 0;
@@ -329,11 +328,11 @@ namespace HotCopper
         }
 
         // Hot Copper Posts, Threads and Authors
-        private void GetHotCopperThreads(object sender, EventArgs e)
+        private void GetHotCopperThreadsFromUrl(object sender, EventArgs e)
         {
             string sourceCode = "";
             url = textBox1.Text;
-            if (url != null || url.Trim() != "")
+            if (url != null && url.Trim() != "")
             {
                 // Retreive a source code from a webpage
                 sourceCode = WorkerClasses.getSourceCode(url);
@@ -344,7 +343,7 @@ namespace HotCopper
                 MessageBox.Show("Please enter URL.");
             }
 
-            GetHotCopperThreadsFromFile(sourceCode);
+            GetHotCopperThreads(sourceCode);
         }
 
         // MARKET DATA
@@ -662,50 +661,30 @@ namespace HotCopper
             listbox.Items.Add("[" + DateTime.Now + "] HOT COPPER by text file begins! Please wait for a few seconds.");
             DialogResult result = openFileDialog1.ShowDialog();
             string links = "";
+            string returnedHtmlString = "";
             if (result == DialogResult.OK) // Test result.
             {
                 string file = openFileDialog1.FileName;
                 try
                 {
                     links = File.ReadAllText(file);
+                    returnedHtmlString = WorkerClasses.getHtmlCodeFromFile(links);
                 }
                 catch (IOException)
                 {
                     listbox.Items.Add("ERROR: Not appropriate file selected!");
                 }
             }
-            readFromFile = true;
 
-            // Retreive source code from a webpage
-            //StringReader strReader = new StringReader(links);
-            StringReader strReader = new StringReader(links);
-            string readUrl = strReader.ReadToEnd();
-            strReader.Close();
-            websiteSourceCode = readUrl;
-            GetHotCopperThreadsFromFile(websiteSourceCode);
-            /*while (true)
+            if(returnedHtmlString != null && returnedHtmlString.Trim() != "")
             {
-                //string readUrl = strReader.ReadLine();
-                if (readUrl != null && readUrl.Trim() != "")
-                {
-                    
-                    //textBox1.Text = url;
-                    GetHotCopperThreads(sender, e);
-                    MessageBox.Show("Something should be happening");
-                }
-                else
-                {
-                    MessageBox.Show(readUrl);
-                    if (url == null)
-                    {
-                        MessageBox.Show("Error");
-                    }
-                    MessageBox.Show("\n[" + DateTime.Now + "] Task Ended.");
-                    break;
-                }
-
+                GetHotCopperThreads(returnedHtmlString);
             }
-            */
+
+            else
+            {
+                MessageBox.Show("Failure in loading file");
+            }
         }
 
         // Market Data by Text file

@@ -34,6 +34,22 @@ namespace HotCopper
             }
         }
 
+        public static string getHtmlCodeFromFile(string linkFile)
+        {
+            try
+            {
+                StringReader strReader = new StringReader(linkFile);
+                string readSourceCode = strReader.ReadToEnd();
+                strReader.Close();
+                return readSourceCode;
+            }
+            catch (WebException ex)
+            {
+                MessageBox.Show(ex.Message);
+                return "invalid file";
+            }
+        }
+
         public static string getGroupWord(string url)
         {
             int endIndex = url.LastIndexOf("/");

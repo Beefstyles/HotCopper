@@ -339,7 +339,12 @@ namespace HotCopper
             endIndex = threadCodeOrg.IndexOf("</");
             string likesStr = threadCodeOrg.Substring(0, endIndex);
             likesStr = likesStr.Replace(",", "");
-            int likes = Convert.ToInt32(likesStr);
+            int likes = 0;
+            if(!Int32.TryParse(likesStr,out likes))
+            {   
+                likes = 0;
+            }
+
 
             // Price at Posting 
             Decimal priceAtPosting = 0;
@@ -351,7 +356,14 @@ namespace HotCopper
                 threadCodeOrg = threadCodeOrg.Substring(startIndex, threadCodeOrg.Length - startIndex);
                 endIndex = threadCodeOrg.IndexOf("</");
                 if (!threadCodeOrg.Substring(0, endIndex).Contains("("))
-                    priceAtPosting = Convert.ToDecimal(threadCodeOrg.Substring(0, endIndex));
+                    if(threadCodeOrg.Trim() != "" && threadCodeOrg != null)
+                    {
+                        if(!Decimal.TryParse(threadCodeOrg.Substring(0, endIndex), out priceAtPosting))
+                        {
+                            //Decimal parsing has failed
+                            priceAtPosting = -1M;
+                        }
+                    }
             }
 
             // Sentiment
@@ -423,7 +435,7 @@ namespace HotCopper
             var db = new HCDB();
             try
             {
-                string sourceCode = WorkerClasses.getSourceCode(authorLink);
+                string sourceCode = getSourceCode(authorLink);
                 if (sourceCode == "invalid") throw new UriFormatException();
 
                 int startIndex = 0; int endIndex = 0;
@@ -442,7 +454,11 @@ namespace HotCopper
                 sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
                 endIndex = sourceCode.IndexOf("<");
                 string postsNumStr = sourceCode.Substring(0, endIndex).Trim().Replace(",", "");
-                int postsTotalNum = Convert.ToInt32(postsNumStr);
+                int postsTotalNum = 0;
+                if (!int.TryParse(postsNumStr, out postsTotalNum))
+                {
+                    postsTotalNum = -1;
+                }
 
                 // Likes Received
                 startIndex = sourceCode.IndexOf("stat-likes");
@@ -450,8 +466,12 @@ namespace HotCopper
                 startIndex = sourceCode.IndexOf("</div>") + 6;
                 sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
                 endIndex = sourceCode.IndexOf("<");
+                int likesReceived = 0;
                 string likesReceivedStr = sourceCode.Substring(0, endIndex).Trim().Replace(",", "");
-                int likesReceived = Convert.ToInt32(likesReceivedStr);
+                if (!int.TryParse(likesReceivedStr, out likesReceived))
+                {
+                    likesReceived = -1;
+                }
 
                 // Following
                 // Its Number
@@ -460,8 +480,13 @@ namespace HotCopper
                 startIndex = sourceCode.IndexOf("</div>") + 6;
                 sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
                 endIndex = sourceCode.IndexOf("<");
+                int following = 0;
+
                 string followingStr = sourceCode.Substring(0, endIndex).Trim().Replace(",", "");
-                int following = Convert.ToInt32(followingStr);
+                if (!int.TryParse(followingStr, out following))
+                {
+                    following = -1;
+                }
 
                 // Followers
                 // Its Number
@@ -470,8 +495,14 @@ namespace HotCopper
                 startIndex = sourceCode.IndexOf("</div>") + 6;
                 sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
                 endIndex = sourceCode.IndexOf("<");
+                int followers = 0;
                 string followersStr = sourceCode.Substring(0, endIndex).Trim().Replace(",", "");
-                int followers = Convert.ToInt32(followersStr);
+
+
+                if (!int.TryParse(followersStr, out followers))
+                {
+                    followers = -1;
+                }
 
                 // Following Stocks stockList 
                 startIndex = sourceCode.IndexOf("member-stockList");
@@ -521,7 +552,7 @@ namespace HotCopper
 
                 // Following - Its name lists
                 string followingLists = "";
-                if (following != 0)
+                if (following > 0)
                 {
                     startIndex = sourceCode.IndexOf("Following " + following + " members");
                     sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
@@ -564,7 +595,7 @@ namespace HotCopper
 
                 // Followers - Its name lists
                 string followersLists = "";
-                if (followers != 0)
+                if (followers > 0)
                 {
                     startIndex = sourceCode.IndexOf("Followed by " + followers + " members");
                     sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
@@ -655,7 +686,8 @@ namespace HotCopper
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error: " + ex);  // May not display in the form
+                Console.WriteLine("Error" + ex.ToString());
+                Console.WriteLine("Error: " + ex.Message);  // May not display in the form
             }
         }
 

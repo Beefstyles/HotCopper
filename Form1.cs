@@ -82,7 +82,6 @@ namespace HotCopper
                             }
                             tags = tags.Replace("&amp;", "&").Trim();
 
-                            MessageBox.Show(tags);
                             // Subject
                             startIndex = sourceCode.IndexOf("listblock subject");
                             sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
@@ -125,7 +124,6 @@ namespace HotCopper
                             endIndex = sourceCode.IndexOf("</");
                             string author = sourceCode.Substring(0, endIndex);
 
-                            MessageBox.Show(author);
                             // Author's Posts Link
                             startIndex = sourceCode.IndexOf("a href");
                             sourceCode = sourceCode.Substring(startIndex, sourceCode.Length - startIndex);
@@ -264,6 +262,7 @@ namespace HotCopper
                                             Last_Poster = lastPoster
                                         });
                                         db.SaveChanges();
+                                        MessageBox.Show("Count " + newData);
                                         newData++;
                                     }
                                     else
@@ -305,6 +304,7 @@ namespace HotCopper
                     catch (Exception ex)
                     {
                         MessageBox.Show(ex.Message);
+                        MessageBox.Show(ex.ToString());
                         listbox.Items.Add("Error: " + ex);
                     }
 
@@ -678,6 +678,7 @@ namespace HotCopper
 
             if(returnedHtmlString != null && returnedHtmlString.Trim() != "")
             {
+                
                 GetHotCopperThreads(returnedHtmlString);
             }
 

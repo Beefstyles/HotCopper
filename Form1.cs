@@ -262,7 +262,8 @@ namespace HotCopper
                                             Last_Poster = lastPoster
                                         });
                                         db.SaveChanges();
-                                        MessageBox.Show("Count " + newData);
+                                        //MessageBox.Show("Count " + newData);
+                                        Console.WriteLine("Count " + newData);
                                         newData++;
                                     }
                                     else
@@ -315,6 +316,7 @@ namespace HotCopper
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
+                    MessageBox.Show(ex.ToString());
                     listbox.Items.Add("Invalid URL!");
                     MessageBox.Show("Invalid URL!");
                     textBox1.Text = "";

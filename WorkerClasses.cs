@@ -435,6 +435,7 @@ namespace HotCopper
             var db = new HCDB();
             try
             {
+                //MessageBox.Show(authorLink);
                 string sourceCode = getSourceCode(authorLink);
                 if (sourceCode == "invalid") throw new UriFormatException();
 
